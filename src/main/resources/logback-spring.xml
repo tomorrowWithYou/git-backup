@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--该日志将日志级别不同的log信息保存到不同的文件中 -->
+<configuration>
+	<include
+		resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<springProperty scope="context" name="springAppName" source="spring.application.name" />
+
+	<!-- 日志在工程中的输出位置 -->
+	<property name="LOG_FILE"
+		value="${BUILD_FOLDER:-build}/${springAppName}" />
+
+	<!-- 控制台的日志输出样式 -->
+	<property name="CONSOLE_LOG_PATTERN"
+		value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%thread]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
+
+	<!-- 控制台输出 -->
+	<appender name="console"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<!-- 日志输出编码 -->
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf8</charset>
+		</encoder>
+	</appender>
+
+    <!-- info文件输出 -->
+    <appender name="infoLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>logs/${springAppName}_info.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>logs/day/%d{yyyy-MM-dd}_${springAppName}_info.log</FileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+    </appender>
+
+	<root level="INFO">
+		<appender-ref ref="console" />
+		<appender-ref ref="infoLogFile" />
+	</root>
+
+</configuration>
